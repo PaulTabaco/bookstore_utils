@@ -47,7 +47,7 @@ func NewRestError(message string, status int, err string, causes []interface{}) 
 	}
 }
 
-func NewBadRequestError(message string, err error) RestErr {
+func NewBadRequestError(message string) RestErr {
 	return restErr{
 		ErrMessage: message,
 		ErrStatus:  http.StatusBadRequest,
@@ -55,7 +55,7 @@ func NewBadRequestError(message string, err error) RestErr {
 	}
 }
 
-func NewNotFoundError(message string, err error) RestErr {
+func NewNotFoundError(message string) RestErr {
 	return restErr{
 		ErrMessage: message,
 		ErrStatus:  http.StatusNotFound,
@@ -63,12 +63,16 @@ func NewNotFoundError(message string, err error) RestErr {
 	}
 }
 
-func NewInternalServerError(message string, err error) restErr {
-	return restErr{
+func NewInternalServerError(message string, err error) RestErr {
+	result := restErr{
 		ErrMessage: message,
 		ErrStatus:  http.StatusInternalServerError,
 		ErrError:   "internal_server_error",
 	}
+	if err != nil {
+		result.ErrCauses = append(result.ErrCauses, err.Error())
+	}
+	return result
 }
 
 func NewUnauthorizedError(message string) RestErr {
